@@ -11,10 +11,12 @@
   <name>api</name>
 
   <properties>
-    <javalin.version>5.6.1</javalin.version>
+    <javalin.version>5.6.2</javalin.version>
     <sl4j.version>2.0.7</sl4j.version>
     <lombok.version>1.18.28</lombok.version>
-    <jackson.version>2.15.0</jackson.version>
+    <jackson.version>2.15.1</jackson.version>
+    <bucket4j.version>8.3.0</bucket4j.version>
+    <lettuce.version>6.2.5.RELEASE</lettuce.version>
     <!-- build -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>11</maven.compiler.source>
@@ -42,6 +44,21 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.bucket4j</groupId>
+      <artifactId>bucket4j-core</artifactId>
+      <version>${bucket4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.bucket4j</groupId>
+      <artifactId>bucket4j-redis</artifactId>
+      <version>${bucket4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.lettuce</groupId>
+      <artifactId>lettuce-core</artifactId>
+      <version>${lettuce.version}</version>
     </dependency>
     <!-- Test dependencies -->
     <dependency>
