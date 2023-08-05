@@ -1,12 +1,13 @@
 # synthesia
 
 ## TODO
-- [ ] Dependency injection
-- [ ] Infrastructure
-- [ ] Async flow
+
+- [ ] Documentation
+- [ ] Tests
 
 ## Requirements
-- [ ] Docker
-- [ ] Return within 2 seconds (test)
-- [ ] Max 10 times per minute
-- [ ] Handle timeout & restarts (persistence of async messages)
+
+- [x] Docker
+- [x] Return within 2 seconds (test)
+- [x] Max 10 times per minute
+- [x] Handle timeout & restarts (persistence of async messages)

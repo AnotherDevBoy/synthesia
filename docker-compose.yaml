@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  synthesia-app:
+    image: synthesia-app:${APP_VERSION}
+    restart: always
+    ports:
+      - "7070:7070"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - SQS_URL=http://localstack:4566
+      - AWS_ACCESS_KEY_ID=123
+      - AWS_SECRET_ACCESS_KEY=xyz
+      - API_KEY=${API_KEY}

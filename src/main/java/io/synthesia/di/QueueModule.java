@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+
+import io.synthesia.Configuration;
 import io.synthesia.async.MessageSigningQueue;
 import io.synthesia.async.SqsMessageSigningQueue;
 import java.net.URI;
@@ -27,7 +29,7 @@ public class QueueModule extends AbstractModule {
         SqsClient.builder()
             .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
             .region(Region.US_EAST_1)
-            .endpointOverride(new URI("http://localhost:4566"));
+            .endpointOverride(new URI(Configuration.getSqsUrl()));
 
     final var client = clientBuilder.build();
 

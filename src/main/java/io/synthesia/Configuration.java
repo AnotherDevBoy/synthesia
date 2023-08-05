@@ -8,4 +8,8 @@ public final class Configuration {
   public static String getRedisUrl() {
     return System.getenv("REDIS_URL");
   }
+
+  public static String getSqsUrl() {
+    return System.getenv("SQS_URL");
+  }
 }
