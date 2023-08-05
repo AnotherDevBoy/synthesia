@@ -1,47 +1,71 @@
 package io.synthesia;
 
-import io.github.bucket4j.Bandwidth;
-import io.github.bucket4j.Bucket;
-import io.github.bucket4j.BucketConfiguration;
-import io.github.bucket4j.Refill;
-import io.github.bucket4j.distributed.ExpirationAfterWriteStrategy;
-import io.github.bucket4j.redis.lettuce.cas.LettuceBasedProxyManager;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import io.javalin.Javalin;
-import io.lettuce.core.RedisClient;
 import io.synthesia.api.SignApi;
-import io.synthesia.crypto.CryptoClient;
-import io.synthesia.crypto.HttpRateLimitedCryptoClient;
-import java.net.http.HttpClient;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
+import io.synthesia.api.WebhookApi;
+import io.synthesia.async.MessageSigningConsumer;
+import io.synthesia.async.MessageSingingProcessor;
+import io.synthesia.di.AsyncModule;
+import io.synthesia.di.CryptoModule;
+import io.synthesia.di.QueueModule;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class App {
   public static void main(String[] args) {
-    Refill refill = Refill.intervally(10, Duration.ofMinutes(1));
-    Bandwidth limit = Bandwidth.classic(10, refill);
+    Injector injector =
+        Guice.createInjector(new CryptoModule(), new QueueModule(), new AsyncModule());
 
-    BucketConfiguration configuration = BucketConfiguration.builder().addLimit(limit).build();
+    SignApi signApi = injector.getInstance(SignApi.class);
+    WebhookApi webhookApi = injector.getInstance(WebhookApi.class);
 
-    RedisClient redisClient = RedisClient.create(Configuration.getRedisUrl());
+    Javalin app =
+        Javalin.create()
+            .get("/webhook", webhookApi::notify)
+            .post("/crypto/sign", signApi::sign)
+            .start(7070);
 
-    LettuceBasedProxyManager<byte[]> proxyManager =
-        LettuceBasedProxyManager.builderFor(redisClient)
-            .withExpirationStrategy(
-                ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax(
-                    Duration.ofSeconds(10)))
-            .build();
+    MessageSigningConsumer messageSigningConsumer =
+        injector.getInstance(MessageSigningConsumer.class);
+    MessageSingingProcessor messageSingingProcessor =
+        injector.getInstance(MessageSingingProcessor.class);
 
-    Bucket bucket =
-        proxyManager.builder().build("client".getBytes(StandardCharsets.UTF_8), configuration);
+    ExecutorService consumerPool = Executors.newSingleThreadExecutor();
+    consumerPool.execute(messageSigningConsumer);
 
-    var client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
+    ExecutorService processorPool = Executors.newFixedThreadPool(10);
 
-    CryptoClient cryptoService =
-        new HttpRateLimitedCryptoClient(client, bucket, Configuration.getSynthesiaApiKey());
-    SignApi signApi = new SignApi(cryptoService);
+    IntStream.range(0, 10).forEach(i -> processorPool.execute(messageSingingProcessor));
 
-    var app = Javalin.create().post("/crypto/sign", signApi::sign).start(7070);
+    scheduleShutdown(app, consumerPool, processorPool);
+  }
 
-    Runtime.getRuntime().addShutdownHook(new Thread(app::stop));
+  private static void scheduleShutdown(
+      Javalin app, ExecutorService consumerPool, ExecutorService processorPool) {
+    Runtime.getRuntime()
+        .addShutdownHook(
+            new Thread(
+                () -> {
+                  try {
+                    app.stop();
+
+                    consumerPool.shutdown();
+                    processorPool.shutdown();
+
+                    consumerPool.awaitTermination(2, TimeUnit.SECONDS);
+                    processorPool.awaitTermination(2, TimeUnit.SECONDS);
+
+                    log.info("Shutdown completed");
+                  } catch (InterruptedException e) {
+                    log.error("An error occurred during shutdown", e);
+                    throw new RuntimeException(e);
+                  }
+                }));
   }
 }

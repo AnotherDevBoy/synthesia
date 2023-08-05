@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.services.sqs.SqsClient;
+import software.amazon.awssdk.services.sqs.model.DeleteMessageRequest;
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest;
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
@@ -26,7 +27,7 @@ public class SqsMessageSigningQueue implements MessageSigningQueue {
   public void scheduleMessageSigning(SignRequestMessage signRequestMessage) {
     final String messageBody = this.mapper.writeValueAsString(signRequestMessage);
 
-    log.trace("Sending message with body {}", messageBody);
+    log.info("Sending message with body {}", messageBody);
 
     this.client.sendMessage(
         SendMessageRequest.builder().messageBody(messageBody).queueUrl(this.queueUrl).build());
@@ -34,7 +35,7 @@ public class SqsMessageSigningQueue implements MessageSigningQueue {
 
   @Override
   public List<SignRequestMessage> getMessagesToSign() {
-    log.trace("Receive messages from {}", this.queueUrl);
+    log.info("Receive messages from {}", this.queueUrl);
     final ReceiveMessageResponse response =
         this.client.receiveMessage(
             ReceiveMessageRequest.builder()
@@ -51,7 +52,7 @@ public class SqsMessageSigningQueue implements MessageSigningQueue {
         .forEach(
             sqsMessage -> {
               try {
-                log.trace("Received message with body {}", sqsMessage.body());
+                log.info("Received message with body {}", sqsMessage.body());
                 final SignRequestMessage message =
                     this.mapper.readValue(sqsMessage.body(), SignRequestMessage.class);
 
@@ -65,5 +66,18 @@ public class SqsMessageSigningQueue implements MessageSigningQueue {
             });
 
     return messages;
+  }
+
+  @Override
+  public void acknowledge(SignRequestMessage signRequestMessage) {
+    log.debug(
+        "Delete message from {} with receipt {}",
+        this.queueUrl,
+        signRequestMessage.getReceiptHandle());
+    this.client.deleteMessage(
+        DeleteMessageRequest.builder()
+            .queueUrl(this.queueUrl)
+            .receiptHandle(signRequestMessage.getReceiptHandle())
+            .build());
   }
 }

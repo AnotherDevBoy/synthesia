@@ -40,7 +40,7 @@ public class HttpRateLimitedCryptoClient implements CryptoClient {
       var response = this.client.send(request, HttpResponse.BodyHandlers.ofString());
 
       if (response.statusCode() != 200) {
-        log.warn("Remote API failed");
+        log.warn("Remote API failed with error {}", response.body());
         return Optional.empty();
       }
 

@@ -7,4 +7,6 @@ public interface MessageSigningQueue {
   void scheduleMessageSigning(SignRequestMessage signRequestMessage);
 
   List<SignRequestMessage> getMessagesToSign();
+
+  void acknowledge(SignRequestMessage signRequestMessage);
 }
