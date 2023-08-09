@@ -26,9 +26,10 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
-    <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
+    <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
     <maven-shade-plugin.version>3.5.0</maven-shade-plugin.version>
     <spotless.version>2.6.1</spotless.version>
+    <surefire.argLine>-Xms256M -Xmx1024M -Djava.awt.headless=true</surefire.argLine>
   </properties>
 
   <dependencyManagement>
@@ -183,6 +184,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <forkCount>${surefire.forkNumber}</forkCount>
+          <reuseForks>true</reuseForks>
+          <argLine>@{surefire.argLine}</argLine>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
