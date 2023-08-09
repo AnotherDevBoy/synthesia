@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-
 import io.synthesia.Configuration;
 import io.synthesia.async.MessageSigningQueue;
 import io.synthesia.async.SqsMessageSigningQueue;

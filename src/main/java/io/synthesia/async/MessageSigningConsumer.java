@@ -6,6 +6,7 @@ import java.util.concurrent.BlockingQueue;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+// TODO: Implement termination
 @Slf4j
 @RequiredArgsConstructor
 public class MessageSigningConsumer implements Runnable {
@@ -14,18 +15,18 @@ public class MessageSigningConsumer implements Runnable {
 
   @Override
   public void run() {
-    try {
-      log.info("MessageSigningConsumer started");
+    log.info("MessageSigningConsumer started");
 
-      while (true) {
+    while (!Thread.currentThread().isInterrupted()) {
+      try {
         final List<SignRequestMessage> messages = this.messageSigningQueue.getMessagesToSign();
 
         for (final SignRequestMessage message : messages) {
           this.processorsQueue.put(message);
         }
+      } catch (final Exception e) {
+        log.error("Encountered an error while pulling from queue", e);
       }
-    } catch (final Exception e) {
-      log.error("Encountered an error while pulling from queue", e);
     }
   }
 }

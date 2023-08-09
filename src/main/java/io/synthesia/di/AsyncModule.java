@@ -3,9 +3,7 @@ package io.synthesia.di;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import io.synthesia.async.MessageSigningConsumer;
-import io.synthesia.async.MessageSigningQueue;
-import io.synthesia.async.MessageSingingProcessor;
+import io.synthesia.async.*;
 import io.synthesia.async.dto.SignRequestMessage;
 import io.synthesia.crypto.CryptoClient;
 import java.net.http.HttpClient;
@@ -23,6 +21,14 @@ public class AsyncModule extends AbstractModule {
 
   @Provides
   @Singleton
+  public WebhookClient webhookClientProvider() {
+    var httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofMillis(500)).build();
+
+    return new HttpWebhookClient(httpClient);
+  }
+
+  @Provides
+  @Singleton
   public MessageSigningConsumer messageSigningConsumerProvider(
       MessageSigningQueue messageSigningQueue, BlockingQueue<SignRequestMessage> consumerQueue) {
     return new MessageSigningConsumer(messageSigningQueue, consumerQueue);
@@ -32,11 +38,11 @@ public class AsyncModule extends AbstractModule {
   @Singleton
   public MessageSingingProcessor messageSingingProcessorProvider(
       CryptoClient cryptoClient,
+      WebhookClient webhookClient,
       BlockingQueue<SignRequestMessage> producerQueue,
       MessageSigningQueue messageSigningQueue) {
-    var httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofMillis(500)).build();
 
     return new MessageSingingProcessor(
-        cryptoClient, httpClient, producerQueue, 10, messageSigningQueue);
+        cryptoClient, webhookClient, producerQueue, 10, messageSigningQueue);
   }
 }
