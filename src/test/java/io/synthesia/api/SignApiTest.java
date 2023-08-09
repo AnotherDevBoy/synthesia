@@ -20,6 +20,9 @@ import org.mockito.MockitoAnnotations;
 public class SignApiTest {
   private static String SIGNED_MESSAGE = "signed";
 
+  private static SignRequestDTO VALID_SIGN_REQUEST =
+      new SignRequestDTO("message", "https://url.com");
+
   @Mock private Context context;
 
   @Mock private CryptoClient cryptoClient;
@@ -47,7 +50,7 @@ public class SignApiTest {
 
   @Test
   public void sign_whenSignSucceeds_returnsSignedMessage() {
-    givenRequestBody(new SignRequestDTO("message", "url"));
+    givenRequestBody(VALID_SIGN_REQUEST);
 
     whenSignSucceeds();
 
@@ -58,7 +61,7 @@ public class SignApiTest {
 
   @Test
   public void sign_whenSignThrows_throwsException() {
-    givenRequestBody(new SignRequestDTO("message", "url"));
+    givenRequestBody(VALID_SIGN_REQUEST);
 
     whenSignThrows();
 
@@ -67,7 +70,7 @@ public class SignApiTest {
 
   @Test
   public void sign_whenClientSignatureMissingAndSigningSchedulingThrows_throwsException() {
-    givenRequestBody(new SignRequestDTO("message", "url"));
+    givenRequestBody(VALID_SIGN_REQUEST);
 
     whenSignFails();
     whenScheduleMessageSigningThrows();
@@ -77,7 +80,7 @@ public class SignApiTest {
 
   @Test
   public void sign_whenClientSignatureMissing_schedulesMessageSigningAndReturns202() {
-    givenRequestBody(new SignRequestDTO("message", "url"));
+    givenRequestBody(VALID_SIGN_REQUEST);
 
     whenSignFails();
 
@@ -108,7 +111,8 @@ public class SignApiTest {
   }
 
   private static Stream<SignRequestDTO> invalidRequestsArguments() {
-    return Stream.of(null, new SignRequestDTO(null, null));
+    return Stream.of(
+        null, new SignRequestDTO(null, null), new SignRequestDTO("message", "not a URL"));
   }
 
   private void assertBadRequest() {

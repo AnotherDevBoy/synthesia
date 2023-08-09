@@ -7,6 +7,7 @@ import io.synthesia.async.MessageSigningQueue;
 import io.synthesia.crypto.CryptoClient;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.validator.routines.UrlValidator;
 
 @Slf4j
 @AllArgsConstructor(onConstructor = @__(@Inject))
@@ -42,6 +43,7 @@ public class SignApi {
         && signRequestDTO.getMessage() != null
         && !signRequestDTO.getMessage().isBlank()
         && signRequestDTO.getWebhookUrl() != null
-        && !signRequestDTO.getWebhookUrl().isBlank();
+        && !signRequestDTO.getWebhookUrl().isBlank()
+        && new UrlValidator().isValid(signRequestDTO.getWebhookUrl());
   }
 }

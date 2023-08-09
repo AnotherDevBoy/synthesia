@@ -22,6 +22,7 @@
     <junit.version>5.10.0</junit.version>
     <mockito.version>5.4.0</mockito.version>
     <testcontainers.version>1.18.3</testcontainers.version>
+    <validator.version>1.7</validator.version>
     <!-- build -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>11</maven.compiler.source>
@@ -97,8 +98,12 @@
       <artifactId>guice</artifactId>
       <version>${guice.version}</version>
     </dependency>
+    <dependency>
+      <groupId>commons-validator</groupId>
+      <artifactId>commons-validator</artifactId>
+      <version>${validator.version}</version>
+    </dependency>
     <!-- Test dependencies -->
-    <!-- Test -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
