@@ -103,7 +103,7 @@ public class SignApiTest {
   }
 
   private void whenSignThrows() {
-    when(this.cryptoClient.sign(any())).thenThrow(new RuntimeException());
+    when(this.cryptoClient.sign(any())).thenThrow(RuntimeException.class);
   }
 
   private void whenScheduleMessageSigningThrows() {
