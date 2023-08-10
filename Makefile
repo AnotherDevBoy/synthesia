@@ -12,8 +12,8 @@ infra:
 build:
 	mvn clean install
 
-docker:
-	docker build --build-arg HERMES_APP_VERSION=$(VERSION) -t $(IMAGE) -f Dockerfile .
+docker: build
+	docker build -t $(IMAGE) -f Dockerfile .
 
 run:
 	APP_VERSION=$(VERSION) API_KEY=$(API_KEY) docker-compose -f docker-compose.yaml up

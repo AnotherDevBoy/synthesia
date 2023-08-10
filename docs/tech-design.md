@@ -1,0 +1,9 @@
+- Requirements
+- Design diagram
+- Webhook client design
+- Rate limitting
+- Assumptions
+- Tech choices (SQS, thread count, Redis)
+- Testing
+- Scalability and bottlenecks
+- Additional considerations

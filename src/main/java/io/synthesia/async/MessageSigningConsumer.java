@@ -6,7 +6,6 @@ import java.util.concurrent.BlockingQueue;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-// TODO: Implement termination
 @Slf4j
 @RequiredArgsConstructor
 public class MessageSigningConsumer implements Runnable {

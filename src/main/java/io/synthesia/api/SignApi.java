@@ -37,7 +37,6 @@ public class SignApi {
     log.info("Sign request processed asynchronously");
   }
 
-  // TODO: validate webhook is a valid URL
   private boolean isValidRequestDTO(SignRequestDTO signRequestDTO) {
     return signRequestDTO != null
         && signRequestDTO.getMessage() != null
