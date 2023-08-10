@@ -40,7 +40,7 @@ public class SignApiTest {
 
   @ParameterizedTest
   @MethodSource("invalidRequestsArguments")
-  public void sign_whenInvalidBody_returns400(SignRequestDTO requestDTO) {
+  void sign_whenInvalidBody_returns400(SignRequestDTO requestDTO) {
     givenRequestBody(requestDTO);
 
     this.sut.sign(this.context);
@@ -49,7 +49,7 @@ public class SignApiTest {
   }
 
   @Test
-  public void sign_whenSignSucceeds_returnsSignedMessage() {
+  void sign_whenSignSucceeds_returnsSignedMessage() {
     givenRequestBody(VALID_SIGN_REQUEST);
 
     whenSignSucceeds();
@@ -60,7 +60,7 @@ public class SignApiTest {
   }
 
   @Test
-  public void sign_whenSignThrows_throwsException() {
+  void sign_whenSignThrows_throwsException() {
     givenRequestBody(VALID_SIGN_REQUEST);
 
     whenSignThrows();
@@ -69,7 +69,7 @@ public class SignApiTest {
   }
 
   @Test
-  public void sign_whenClientSignatureMissingAndSigningSchedulingThrows_throwsException() {
+  void sign_whenClientSignatureMissingAndSigningSchedulingThrows_throwsException() {
     givenRequestBody(VALID_SIGN_REQUEST);
 
     whenSignFails();
@@ -79,7 +79,7 @@ public class SignApiTest {
   }
 
   @Test
-  public void sign_whenClientSignatureMissing_schedulesMessageSigningAndReturns202() {
+  void sign_whenClientSignatureMissing_schedulesMessageSigningAndReturns202() {
     givenRequestBody(VALID_SIGN_REQUEST);
 
     whenSignFails();
