@@ -42,9 +42,11 @@ public class MessageSingingProcessor implements Runnable {
 
         var signedMessage = maybeSignedMessage.get();
 
-        this.webhookClient.notify(signRequestMessage.getWebhookUrl(), signedMessage);
+        var success = this.webhookClient.notify(signRequestMessage.getWebhookUrl(), signedMessage);
 
-        this.messageSigningQueue.acknowledge(signRequestMessage);
+        if (success) {
+          this.messageSigningQueue.acknowledge(signRequestMessage);
+        }
 
         log.info("SignRequestMessage processed successfully");
       } catch (final Exception e) {

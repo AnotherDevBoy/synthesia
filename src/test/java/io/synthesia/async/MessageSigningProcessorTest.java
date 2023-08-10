@@ -45,59 +45,68 @@ public class MessageSigningProcessorTest {
   void run_whenNoMessagesInProcessorQueue_doesNotAttemptToSign() {
     this.runSut();
 
-    verify(this.cryptoClient, Mockito.times(0)).sign(any());
+    assertNoMessageSigningAttempted();
   }
 
   @Test
   void run_whenMessagesInProcessorQueueAndSignFails_doesNotCallTheWebhook() {
-    when(this.cryptoClient.sign(any())).thenReturn(Optional.empty());
+    givenSignRequestMessageToProcess();
+
+    whenSigningFails();
 
     this.runSut();
 
-    verify(this.cryptoClient, Mockito.times(0)).sign(any());
+    assertWebhookNotCalled();
   }
 
   @Test
   void run_whenMessagesInProcessorQueueAndSignThrows_doesNotCallTheWebhook() {
-    when(this.cryptoClient.sign(any())).thenThrow(RuntimeException.class);
+    givenSignRequestMessageToProcess();
+
+    whenSigningThrows();
 
     this.runSut();
 
-    verify(this.cryptoClient, Mockito.times(0)).sign(any());
+    assertWebhookNotCalled();
   }
 
   @Test
   void run_whenMessagesInProcessorQueueAndSignSucceedsButWebhookThrows_doesNotAcknowledgeMessage() {
-    var signRequestMessage = new SignRequestMessage("message", "webhook");
-    signRequestMessage.setReceiptHandle("receipt");
+    givenSignRequestMessageToProcess();
 
-    this.processorsQueue.add(signRequestMessage);
+    whenSigningSucceeds();
 
-    when(this.cryptoClient.sign(any())).thenReturn(Optional.of("signedMessage"));
-
-    when(this.webhookClient.notify(any(), any())).thenThrow(RuntimeException.class);
+    whenWebhookThrows();
 
     this.runSut();
 
-    verify(this.cryptoClient, Mockito.times(1)).sign(any());
-    verify(this.messageSigningQueue, Mockito.times(0)).acknowledge(any());
+    assertMessageSigningRequestNotAcknowledged();
+  }
+
+  @Test
+  void run_whenMessagesInProcessorQueueAndSignSucceedsButWebhookFails_doesNotAcknowledgeMessage() {
+    givenSignRequestMessageToProcess();
+
+    whenSigningSucceeds();
+
+    whenWebhookFails();
+
+    this.runSut();
+
+    assertMessageSigningRequestNotAcknowledged();
   }
 
   @Test
   void run_whenMessagesInProcessorQueueAndSignSucceedsAndWebhookSucceeds_acknowledgesMessage() {
-    var signRequestMessage = new SignRequestMessage("message", "webhook");
-    signRequestMessage.setReceiptHandle("receipt");
+    givenSignRequestMessageToProcess();
 
-    this.processorsQueue.add(signRequestMessage);
+    whenSigningSucceeds();
 
-    when(this.cryptoClient.sign(any())).thenReturn(Optional.of("signedMessage"));
-
-    when(this.webhookClient.notify(any(), any())).thenReturn(true);
+    whenWebhookSucceeds();
 
     this.runSut();
 
-    verify(this.cryptoClient, Mockito.times(1)).sign(any());
-    verify(this.messageSigningQueue, Mockito.times(1)).acknowledge(any());
+    assertMessageSigningRequestAcknowledged();
   }
 
   @SneakyThrows
@@ -113,5 +122,52 @@ public class MessageSigningProcessorTest {
     carrier.awaitTermination(2, TimeUnit.SECONDS);
 
     carrier.shutdownNow();
+  }
+
+  private void givenSignRequestMessageToProcess() {
+    var signRequestMessage = new SignRequestMessage("message", "webhook");
+    signRequestMessage.setReceiptHandle("receipt");
+
+    this.processorsQueue.add(signRequestMessage);
+  }
+
+  private void whenSigningFails() {
+    when(this.cryptoClient.sign(any())).thenReturn(Optional.empty());
+  }
+
+  private void whenSigningThrows() {
+    when(this.cryptoClient.sign(any())).thenThrow(RuntimeException.class);
+  }
+
+  private void whenSigningSucceeds() {
+    when(this.cryptoClient.sign(any())).thenReturn(Optional.of("signedMessage"));
+  }
+
+  private void whenWebhookFails() {
+    when(this.webhookClient.notify(any(), any())).thenReturn(false);
+  }
+
+  private void whenWebhookThrows() {
+    when(this.webhookClient.notify(any(), any())).thenThrow(RuntimeException.class);
+  }
+
+  private void whenWebhookSucceeds() {
+    when(this.webhookClient.notify(any(), any())).thenReturn(true);
+  }
+
+  private void assertWebhookNotCalled() {
+    verify(this.webhookClient, Mockito.times(0)).notify(any(), any());
+  }
+
+  private void assertNoMessageSigningAttempted() {
+    verify(this.cryptoClient, Mockito.times(0)).sign(any());
+  }
+
+  private void assertMessageSigningRequestNotAcknowledged() {
+    verify(this.messageSigningQueue, Mockito.times(0)).acknowledge(any());
+  }
+
+  private void assertMessageSigningRequestAcknowledged() {
+    verify(this.messageSigningQueue, Mockito.times(1)).acknowledge(any());
   }
 }
