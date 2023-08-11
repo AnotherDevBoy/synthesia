@@ -67,3 +67,5 @@ curl --location 'http://localhost:7070/crypto/sign' \
     "webhookUrl": "http://127.0.0.1:7070/webhook"
 }'
 ```
+
+The app exposes an additional `/webhook` endpoint to facilitate local testing.
