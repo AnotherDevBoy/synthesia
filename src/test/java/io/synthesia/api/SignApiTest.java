@@ -1,7 +1,11 @@
 package io.synthesia.api;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import io.javalin.http.Context;
 import io.synthesia.api.dto.SignRequestDTO;
@@ -91,7 +95,8 @@ public class SignApiTest {
   }
 
   private void givenRequestBody(SignRequestDTO requestDTO) {
-    when(this.context.bodyAsClass(any())).thenReturn(requestDTO);
+    when(this.context.queryParam(eq("message"))).thenReturn(requestDTO.getMessage());
+    when(this.context.queryParam(eq("webhookUrl"))).thenReturn(requestDTO.getWebhookUrl());
   }
 
   private void whenSignSucceeds() {
@@ -111,8 +116,7 @@ public class SignApiTest {
   }
 
   private static Stream<SignRequestDTO> invalidRequestsArguments() {
-    return Stream.of(
-        null, new SignRequestDTO(null, null), new SignRequestDTO("message", "not a URL"));
+    return Stream.of(new SignRequestDTO(null, null), new SignRequestDTO("message", "not a URL"));
   }
 
   private void assertBadRequest() {

@@ -28,7 +28,7 @@ public class App {
     Javalin app =
         Javalin.create()
             .get("/webhook", webhookApi::notify)
-            .post("/crypto/sign", signApi::sign) // TODO: Make this a GET with params
+            .get("/crypto/sign", signApi::sign)
             .start(7070);
 
     MessageSigningConsumer messageSigningConsumer =
@@ -36,11 +36,12 @@ public class App {
     MessageSingingProcessor messageSingingProcessor =
         injector.getInstance(MessageSingingProcessor.class);
 
-    // TODO: Make thread pool sizes configurable with a sane default
-    ExecutorService consumerPool = Executors.newFixedThreadPool(1);
+    ExecutorService consumerPool =
+        Executors.newFixedThreadPool(Configuration.getConsumerPoolSize());
     consumerPool.execute(messageSigningConsumer);
 
-    ExecutorService processorPool = Executors.newFixedThreadPool(10);
+    ExecutorService processorPool =
+        Executors.newFixedThreadPool(Configuration.getProcessorPoolSize());
 
     IntStream.range(0, 10).forEach(i -> processorPool.execute(messageSingingProcessor));
 

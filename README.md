@@ -1,10 +1,6 @@
 # Synthesia
 
-TODO: fix wildcard imports
-
-## Introduction
-
-TBD
+In this README, you can find instructions on how to build and run the app.
 
 For more information about the design of the solution, tradeoffs made and more, head to the [Tech Design document](tech-design.md).
 
@@ -60,12 +56,7 @@ synthesia-synthesia-app-1  | [pool-4-thread-1] INFO io.synthesia.async.MessageSi
 After that, simply send a `POST` request to `http://localhost:7070/crypto/sign` with the message and the webhook URL in the body:
 
 ```
-curl --location 'http://localhost:7070/crypto/sign' \
---header 'Content-Type: application/json' \
---data '{
-    "message": "And dasdasdas oe",
-    "webhookUrl": "http://127.0.0.1:7070/webhook"
-}'
+curl --location 'http://localhost:7070/crypto/sign?message=And%20dasdasdas%20oe&webhookUrl=http%3A%2F%2F127.0.0.1%3A7070%2Fwebhook'
 ```
 
 The app exposes an additional `/webhook` endpoint to facilitate local testing.

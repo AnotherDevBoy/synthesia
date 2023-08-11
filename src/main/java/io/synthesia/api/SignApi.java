@@ -17,7 +17,11 @@ public class SignApi {
 
   public void sign(Context context) {
     log.info("Received Sign request");
-    SignRequestDTO signRequestDTO = context.bodyAsClass(SignRequestDTO.class);
+
+    var message = context.queryParam("message");
+    var webhookUrl = context.queryParam("webhookUrl");
+
+    SignRequestDTO signRequestDTO = new SignRequestDTO(message, webhookUrl);
 
     if (!isValidRequestDTO(signRequestDTO)) {
       context.status(400);
