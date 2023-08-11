@@ -8,7 +8,7 @@ The purpose of this document is to showcase the design of the challenge's soluti
 
 ### Functional
 
-- Expose a /crypto/sign endpoint with a similar input syntax to ours.
+- Expose a `/crypto/sign` endpoint with a similar input syntax to ours.
 - If a result can be provided immediately, include it in the HTTP response with a 200 status code.
 - If a result cannot be provided within the required timeframe, respond with a 202 status code, and notify the user with the result when it is ready. This should be implemented by allowing users of your API to specify a webhook notification URL for each request.
 

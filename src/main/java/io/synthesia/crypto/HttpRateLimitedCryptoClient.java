@@ -19,6 +19,7 @@ public class HttpRateLimitedCryptoClient implements CryptoClient {
   private Bucket bucket;
   private String apiKey;
 
+  // TODO: Make base URI configurable
   @Override
   @SneakyThrows
   public Optional<String> sign(String message) {
