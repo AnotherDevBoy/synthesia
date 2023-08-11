@@ -30,7 +30,7 @@ At a glance, the application will have two core components:
 
 When the first attempt to sign fails (regardless of the reason), the **API** will delegate to the **Async Processor** further retry attempts. To do so, it will send a message to a queue that's periodically polled by the **Async Processor**.
 
-TODO: Insert diagram
+![Context Diagram](/docs/context.png)
 
 ### Detailed design
 
@@ -69,6 +69,7 @@ The reason for that 1/10 balance is the fact that the consumer, at most, will be
 Both thread pool sizes are configurable through environment variables in case they need to be modified for scalability purposes.
 
 Finally, the consumer and processor exchanges messages through a `BlockingQueue` with a capacity of 100. This means that the consumer will block if the queue is full and will wait until the processors have caught up. This has two benefits:
+
 - It avoids hitting an `OutOfMemoryException` by adding too many messages to the queue.
 - It ensures the number of SQS messages in-flight is bounded.
 

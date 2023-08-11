@@ -1,0 +1,26 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+Person(user, "User", "A developer that wants to sign a message")
+
+System_Ext(sqs, "SQS", "A queue")
+System_Ext(redis, "Redis", "Cache")
+
+System_Boundary(challenge, "Challenge Solution") {
+  System(api, "API", "Provides endpoints to sign messages in a reliable way")
+  
+  System_Boundary(async_processor, "Async Processor") {
+    System(consumer, "MessageSigningConsumer", "Receives requests to retry the process of signing a message and forwards them to the processor")
+    System(processor, "MessageSigningProcessor", "Signs messages and notifies the users of the API of its result")
+  }
+}
+
+Rel_R(user, api, "Requests a signed message")
+Rel_R(api, sqs, "Sends requests to retry the signing of a message")
+Rel_D(api, redis, "Checks whether it can perform requests to the external API")
+Rel_U(sqs, consumer, "Reads requests to retry the signing of a message from")
+Rel_R(consumer, processor, "Schedules the signing retry attempt")
+Rel_R(processor, redis, "Checks whether it can perform requests to the external API")
+Rel_R(processor, user, "Sends the signed message")
+
+@enduml
