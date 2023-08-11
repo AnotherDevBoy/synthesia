@@ -68,18 +68,34 @@ The reason for that 1/10 balance is the fact that the consumer, at most, will be
 
 Both thread pool sizes are configurable through environment variables in case they need to be modified for scalability purposes.
 
-#### Crypto client & rate-limitting
+#### Crypto client
 
-TBD
+The`CryptoClient` is the interface that provides used to abstract away the communication with the unreliable API. It has one implementation, the `HttpRateLimitedCryptoClient` that uses:
+
+- An HTTP client configured with a 2 second timeout. To meet the non-functional requirement of returning immediately (within ~2s)
+- A Bucket4j bucket. To meet the non-functional requirement of not hitting the unreliable endpoint more than 10 times per minute.
 
 #### Webhook client
 
-TBD
+Following the same approach as with the `CryptoClient`, the webhook notification is abstracted away behind the `WebhookClient` interface. An HTTP-based implementation can be found in the `HttpWebhookClient` class.
+
+The definition of the webhook notification mechanism, other than the provided webhook URL being an HTTP URL, was vague. Hence I had to make some assumptions on how it should work based on the URL provided as an argument.
+
+The webhook notification will be a `POST` to the provided webhookURL with the signed message as a query parameter (`signedMessage`). If the webhook returns a status code 300 or greater, it will be considered that the notification failed and it will be retried (after SQS visibility timeout). Otherwise, it will be considered successful.
 
 #### Testing
 
-Unit testing, Integration testing, Local testing
+The business logic has been tested with unit tests, where the dependencies have been mocked using Mockito.
+
+Integration tests have been used to test specific integrations (such as SQS or the HTTP clients).
 
 #### Scalability and bottlenecks
 
-TBD
+To scale this application further, there are multiple areas that can be improved:
+
+- Since the load patterns may differ, the **API** and the **Asynchronous Processor** pipeline can be decoupled in separate containers.
+- The **Asynchronous Processor** can horizontally scale by adding more threads until the container is maximized and adding more instances of the container thereafter.
+- To control the number of reappearing messages after multiple failures in a row, a decision can be made to move messages that have been retried multiple times to a DLQ.
+- Eventually, the max number of inflight messages for SQS could be hit (120,000). In that case, the timeout for the HTTP client used for webhook notifications can be further reduced to ensure it fails early. If that's not an option, a partition strategy would be required. For example, messages could be split into different queues (or topics if using alternatives like SNS or Kafka) based on the user IP, webhook URL, etc.
+- On the rate-limitting side, although Redis is very efficient at performing reads, depending on how the rest of the app is scaled, it could potentially hit a limit on number of connections to the Redis cluster. In that case, more read replicas could be added to the cluster to allow for more connections.
+- The main issue with the application is the unreliable endpoint. So another potential solution to avoid bottlenecks or adding complexity would be to run the signing algorithm inside of the API as opposed to relying on an external app.
