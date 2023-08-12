@@ -11,5 +11,6 @@ public class SqsMessageSigningQueueTest {
 
   // TODO: getMessagesToSign returns no messages if message cannot be deserialized
 
-  // TODO: given a message in the queue, after acknowledgeing the mssage, the message is no longer there
+  // TODO: given a message in the queue, after acknowledgeing the mssage, the message is no longer
+  // there
 }

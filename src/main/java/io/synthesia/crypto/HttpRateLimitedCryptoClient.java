@@ -7,19 +7,21 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Optional;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class HttpRateLimitedCryptoClient implements CryptoClient {
-  private HttpClient client;
-  private Bucket bucket;
-  private String apiKey;
+  private final HttpClient client;
+  private final Bucket bucket;
+  private final String baseUrl;
+  private final String apiKey;
+  private final Duration timeout;
 
-  // TODO: Make base URI configurable
   @Override
   @SneakyThrows
   public Optional<String> sign(String message) {
@@ -33,8 +35,9 @@ public class HttpRateLimitedCryptoClient implements CryptoClient {
 
       HttpRequest request =
           HttpRequest.newBuilder()
-              .uri(new URI("https://hiring.api.synthesia.io/crypto/sign?message=" + encodedMessage))
+              .uri(new URI(baseUrl + "/crypto/sign?message=" + encodedMessage))
               .headers("Authorization", apiKey)
+              .timeout(timeout)
               .GET()
               .build();
 

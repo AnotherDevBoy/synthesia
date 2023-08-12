@@ -30,4 +30,16 @@ public final class Configuration {
 
     return maybePoolSize == null ? 10 : Integer.parseInt(maybePoolSize);
   }
+
+  public static String getApiBaseURL() {
+    String maybeApiBaseURL = System.getenv("API_BASE_URL");
+
+    return maybeApiBaseURL == null ? "https://hiring.api.synthesia.io" : maybeApiBaseURL;
+  }
+
+  public static int getClientTimeoutInSeconds() {
+    String maybeTimeoutInSeconds = System.getenv("CLIENT_TIMEOUT");
+
+    return maybeTimeoutInSeconds == null ? 2 : Integer.parseInt(maybeTimeoutInSeconds);
+  }
 }

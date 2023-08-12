@@ -4,12 +4,14 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 @RequiredArgsConstructor
 public class HttpWebhookClient implements WebhookClient {
   private final HttpClient webhookClient;
+  private final Duration timeout;
 
   @SneakyThrows
   @Override
@@ -17,6 +19,7 @@ public class HttpWebhookClient implements WebhookClient {
     HttpRequest request =
         HttpRequest.newBuilder()
             .uri(new URI(String.format("%s?signedMessage=%s", webhookUrl, signedMessage)))
+            .timeout(timeout)
             .GET()
             .build();
 

@@ -38,8 +38,16 @@ public class CryptoModule extends AbstractModule {
     Bucket bucket =
         proxyManager.builder().build("client".getBytes(StandardCharsets.UTF_8), configuration);
 
-    var client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
+    var client =
+        HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(Configuration.getClientTimeoutInSeconds()))
+            .build();
 
-    return new HttpRateLimitedCryptoClient(client, bucket, Configuration.getSynthesiaApiKey());
+    return new HttpRateLimitedCryptoClient(
+        client,
+        bucket,
+        Configuration.getApiBaseURL(),
+        Configuration.getSynthesiaApiKey(),
+        Duration.ofSeconds(Configuration.getClientTimeoutInSeconds()));
   }
 }

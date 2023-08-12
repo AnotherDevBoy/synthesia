@@ -28,7 +28,8 @@ public class AsyncModule extends AbstractModule {
   public WebhookClient webhookClientProvider() {
     var httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofMillis(500)).build();
 
-    return new HttpWebhookClient(httpClient);
+    return new HttpWebhookClient(
+        httpClient, Duration.ofSeconds(Configuration.getClientTimeoutInSeconds()));
   }
 
   @Provides
