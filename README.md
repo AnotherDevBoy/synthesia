@@ -6,10 +6,19 @@ For more information about the design of the solution, tradeoffs made and more, 
 
 ## Requirements
 
-- Maven
-- Coretto 11 JDK
-- Docker
-- Docker Compose
+- [Maven](https://maven.apache.org/install.html)
+- [Coretto 11 JDK](https://docs.aws.amazon.com/corretto/latest/corretto-11-ug/downloads-list.html)
+- [Docker](https://docs.docker.com/desktop/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+### Container images
+
+The app depends on certain version of the containers. You can download them by running:
+
+```
+docker pull localstack/localstack:2.2
+docker pull redis:6.2-alpine
+```
 
 ## Build
 
