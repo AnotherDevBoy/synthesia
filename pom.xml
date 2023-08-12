@@ -18,18 +18,19 @@
     <bucket4j.version>8.3.0</bucket4j.version>
     <lettuce.version>6.2.5.RELEASE</lettuce.version>
     <aws.java.sdk.version>2.20.119</aws.java.sdk.version>
+    <aws.java.sdk.v1.version>1.11.720</aws.java.sdk.v1.version>
     <guice.version>7.0.0</guice.version>
-    <junit.version>5.10.0</junit.version>
+    <junit.version>5.9.1</junit.version>
     <mockito.version>2.27.0</mockito.version>
-    <testcontainers.version>1.18.3</testcontainers.version>
+    <testcontainers.version>1.17.6</testcontainers.version>
     <validator.version>1.7</validator.version>
     <wiremock.version>2.27.2</wiremock.version>
-    <testcontainers.version>1.18.3</testcontainers.version>
     <!-- build -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
     <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+    <surefire.forkNumber>1</surefire.forkNumber>
     <maven-shade-plugin.version>3.5.0</maven-shade-plugin.version>
     <spotless.version>2.6.1</spotless.version>
     <surefire.argLine>-Xms256M -Xmx1024M -Djava.awt.headless=true</surefire.argLine>
@@ -161,6 +162,12 @@
       <groupId>com.github.tomakehurst</groupId>
       <artifactId>wiremock-standalone</artifactId>
       <version>${wiremock.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-core</artifactId>
+      <version>${aws.java.sdk.v1.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

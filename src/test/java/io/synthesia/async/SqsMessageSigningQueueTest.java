@@ -44,7 +44,7 @@ public class SqsMessageSigningQueueTest {
   void beforeEach() {
     this.sqsClient =
         SqsClient.builder()
-            .endpointOverride(localstack.getEndpoint())
+            .endpointOverride(localstack.getEndpointOverride(LocalStackContainer.Service.SQS))
             .credentialsProvider(
                 StaticCredentialsProvider.create(
                     AwsBasicCredentials.create(
@@ -107,9 +107,10 @@ public class SqsMessageSigningQueueTest {
 
     var queueAttributes = this.getQueueAttributes();
 
-    assertEquals(0, queueAttributes.get(QueueAttributeName.APPROXIMATE_NUMBER_OF_MESSAGES));
+    assertEquals(0, (int) queueAttributes.get(QueueAttributeName.APPROXIMATE_NUMBER_OF_MESSAGES));
     assertEquals(
-        0, queueAttributes.get(QueueAttributeName.APPROXIMATE_NUMBER_OF_MESSAGES_NOT_VISIBLE));
+        0,
+        (int) queueAttributes.get(QueueAttributeName.APPROXIMATE_NUMBER_OF_MESSAGES_NOT_VISIBLE));
   }
 
   private String createQueue() {
