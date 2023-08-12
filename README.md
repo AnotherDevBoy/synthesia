@@ -1,5 +1,7 @@
 # Synthesia
 
+![Build](https://github.com/albertowar/synthesia/actions/workflows/build/badge.svg)
+
 This repository contains my solution to the [Synthesia challenge](https://synthesia.notion.site/Synthesia-Backend-Tech-Challenge-Editor-42c506f302b24fae97fb7b6e9ff4b567).
 
 In this README, you can find instructions on how to build and run the app.
