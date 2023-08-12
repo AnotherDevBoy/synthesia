@@ -1,5 +1,7 @@
 # Synthesia
 
+This repository contains my solution to the [Synthesia challenge](https://synthesia.notion.site/Synthesia-Backend-Tech-Challenge-Editor-42c506f302b24fae97fb7b6e9ff4b567).
+
 In this README, you can find instructions on how to build and run the app.
 
 For more information about the design of the solution, tradeoffs made and more, head to the [Tech Design document](tech-design.md).
@@ -22,7 +24,9 @@ docker pull redis:6.2-alpine
 
 ## Build
 
-To build the application (including the container), run: `make build`
+To build the application (including the container), run: `make build`.
+
+A [GitHub Action](https://github.com/albertowar/synthesia/actions) was created to showcase the build step in action.
 
 ## Run
 
