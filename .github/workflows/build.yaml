@@ -14,4 +14,7 @@ jobs:
           java-version: "11"
           distribution: "temurin"
       - name: Build with Maven
-        run: mvn --batch-mode clean install
+        run: |
+          docker pull localstack/localstack:2.2
+          docker pull redis:6.2-alpine
+          mvn --batch-mode clean install

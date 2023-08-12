@@ -33,7 +33,7 @@
     <surefire.forkNumber>1</surefire.forkNumber>
     <maven-shade-plugin.version>3.5.0</maven-shade-plugin.version>
     <spotless.version>2.6.1</spotless.version>
-    <surefire.argLine>-Xms256M -Xmx1024M -Djava.awt.headless=true</surefire.argLine>
+    <surefire.argLine>-Xms256M -Xmx2048M -Djava.awt.headless=true</surefire.argLine>
   </properties>
 
   <dependencyManagement>
