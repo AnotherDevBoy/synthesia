@@ -1,6 +1,6 @@
 # Synthesia
 
-![Build](https://github.com/albertowar/synthesia/actions/workflows/build/badge.svg)
+![Build](https://github.com/albertowar/synthesia/actions/workflows/build.yaml/badge.svg)
 
 This repository contains my solution to the [Synthesia challenge](https://synthesia.notion.site/Synthesia-Backend-Tech-Challenge-Editor-42c506f302b24fae97fb7b6e9ff4b567).
 
