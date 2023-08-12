@@ -147,3 +147,5 @@ Here is the report:
      vus............................: 10      min=10      max=10
      vus_max........................: 10      min=10      max=10
 ```
+
+The majority of the requests ended up hitting the rate limit.

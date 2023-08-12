@@ -21,3 +21,6 @@ run:
 stop:
 	APP_VERSION=$(VERSION) docker-compose -f docker-compose.yaml down
 	docker-compose -f docker-compose-infra.yaml down
+
+load-test:
+	cd lt; k6 run --vus 10 --duration 30s script.js
