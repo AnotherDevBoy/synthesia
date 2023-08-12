@@ -57,7 +57,7 @@ synthesia-synthesia-app-1  | [pool-4-thread-1] INFO io.synthesia.async.MessageSi
 After that, simply send a `POST` request to `http://localhost:7070/crypto/sign` with the message and the webhook URL in the body:
 
 ```
-curl --location 'http://localhost:7070/crypto/sign?message=And%20dasdasdas%20oe&webhookUrl=http%3A%2F%2F127.0.0.1%3A7070%2Fwebhook'
+curl --location 'http://localhost:7070/crypto/sign?message=test&webhookUrl=http%3A%2F%2F127.0.0.1%3A7070%2Fwebhook' --verbose
 ```
 
 The app exposes an additional `/webhook` endpoint to facilitate local testing.
