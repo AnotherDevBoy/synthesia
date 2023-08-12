@@ -17,3 +17,7 @@ docker: build
 
 run:
 	APP_VERSION=$(VERSION) API_KEY=$(API_KEY) docker-compose -f docker-compose.yaml up
+
+stop:
+	APP_VERSION=$(VERSION) docker-compose -f docker-compose.yaml down
+	docker-compose -f docker-compose-infra.yaml down

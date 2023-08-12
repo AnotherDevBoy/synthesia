@@ -21,6 +21,7 @@ To run the application (inside of Docker), you need to:
 
 - Start the infrastructure (Redis, AWS): `make infra`
 - Start the application: `API_KEY=<the provided key> make run`
+- Stop all the running containers: `make stop`
 
 ## Test locally
 
