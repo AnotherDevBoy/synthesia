@@ -10,8 +10,8 @@ For more information about the design of the solution, tradeoffs made and more, 
 
 ## Requirements
 
-- [Maven](https://maven.apache.org/install.html)
-- [Coretto 11 JDK](https://docs.aws.amazon.com/corretto/latest/corretto-11-ug/downloads-list.html)
+- (Optional) [Maven](https://maven.apache.org/install.html)
+- (Optional) [Coretto 11 JDK](https://docs.aws.amazon.com/corretto/latest/corretto-11-ug/downloads-list.html)
 - [Docker](https://docs.docker.com/desktop/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
@@ -26,7 +26,9 @@ docker pull redis:6.2-alpine
 
 ## Build
 
-To build the application (including the container), run: `make build`.
+To build the application locally, run `make build` (this will not build the container).
+
+To build the application directly inside of a container, run `make docker`.
 
 A [GitHub Action](https://github.com/albertowar/synthesia/actions) was created to showcase the build step in action.
 

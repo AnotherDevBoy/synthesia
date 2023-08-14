@@ -12,7 +12,7 @@ infra:
 build:
 	mvn clean install
 
-docker: build
+docker:
 	docker build -t $(IMAGE) -f Dockerfile .
 
 run:
