@@ -38,10 +38,10 @@ public class CryptoModule extends AbstractModule {
     Bucket bucket =
         proxyManager.builder().build("client".getBytes(StandardCharsets.UTF_8), configuration);
 
-
     Counter success = Counter.builder("client_success").register(meterRegistry);
     Counter clientErrorsCounter = Counter.builder("client_error").register(meterRegistry);
-    Counter apiRateLimitErrorCounter = Counter.builder("client_api_rate_limit_error").register(meterRegistry);
+    Counter apiRateLimitErrorCounter =
+        Counter.builder("client_api_rate_limit_error").register(meterRegistry);
     Counter rateLimitCounter = Counter.builder("client_rate_limit_count").register(meterRegistry);
 
     var client =
