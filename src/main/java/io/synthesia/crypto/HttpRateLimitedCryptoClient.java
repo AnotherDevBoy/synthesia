@@ -1,6 +1,7 @@
 package io.synthesia.crypto;
 
 import io.github.bucket4j.Bucket;
+import io.micrometer.core.instrument.Counter;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -22,12 +23,17 @@ public class HttpRateLimitedCryptoClient implements CryptoClient {
   private final String apiKey;
   private final Duration timeout;
 
+  private final Counter success;
+  private final Counter errors;
+  private final Counter apiRateLimitError;
+  private final Counter rateLimit;
+
   @Override
   @SneakyThrows
   public Optional<String> sign(String message) {
     try {
       if (!bucket.tryConsume(1)) {
-        log.warn("Rate limit hit");
+        this.rateLimit.increment();
         return Optional.empty();
       }
 
@@ -44,10 +50,20 @@ public class HttpRateLimitedCryptoClient implements CryptoClient {
       var response = this.client.send(request, HttpResponse.BodyHandlers.ofString());
 
       if (response.statusCode() != 200) {
-        log.warn("Remote API failed with error {}", response.body());
+        log.warn(
+            "Remote API failed with status {} and error {}",
+            response.statusCode(),
+            response.body());
+        this.errors.increment();
+
+        if (response.statusCode() == 429) {
+          this.apiRateLimitError.increment();
+        }
+
         return Optional.empty();
       }
 
+      success.increment();
       return Optional.of(response.body());
     } catch (Exception e) {
       log.error("Unable to sign message", e);

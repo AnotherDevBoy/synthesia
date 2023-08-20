@@ -25,6 +25,7 @@
     <testcontainers.version>1.17.6</testcontainers.version>
     <validator.version>1.7</validator.version>
     <wiremock.version>2.27.2</wiremock.version>
+    <io.micrometer.version>1.11.3</io.micrometer.version>
     <!-- build -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>11</maven.compiler.source>
@@ -105,6 +106,16 @@
       <groupId>commons-validator</groupId>
       <artifactId>commons-validator</artifactId>
       <version>${validator.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.javalin</groupId>
+      <artifactId>javalin-micrometer</artifactId>
+      <version>${javalin.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-prometheus</artifactId>
+      <version>${io.micrometer.version}</version>
     </dependency>
     <!-- Test dependencies -->
     <dependency>

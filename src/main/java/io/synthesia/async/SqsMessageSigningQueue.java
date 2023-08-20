@@ -27,7 +27,7 @@ public class SqsMessageSigningQueue implements MessageSigningQueue {
   public void scheduleMessageSigning(SignRequestMessage signRequestMessage) {
     final String messageBody = this.mapper.writeValueAsString(signRequestMessage);
 
-    log.info("Sending message with body {}", messageBody);
+    log.trace("Sending message with body {}", messageBody);
 
     this.client.sendMessage(
         SendMessageRequest.builder().messageBody(messageBody).queueUrl(this.queueUrl).build());
@@ -35,7 +35,7 @@ public class SqsMessageSigningQueue implements MessageSigningQueue {
 
   @Override
   public List<SignRequestMessage> getMessagesToSign() {
-    log.info("Receive messages from {}", this.queueUrl);
+    log.trace("Receive messages from {}", this.queueUrl);
     final ReceiveMessageResponse response =
         this.client.receiveMessage(
             ReceiveMessageRequest.builder()
@@ -52,7 +52,7 @@ public class SqsMessageSigningQueue implements MessageSigningQueue {
         .forEach(
             sqsMessage -> {
               try {
-                log.info("Received message with body {}", sqsMessage.body());
+                log.trace("Received message with body {}", sqsMessage.body());
                 final SignRequestMessage message =
                     this.mapper.readValue(sqsMessage.body(), SignRequestMessage.class);
 

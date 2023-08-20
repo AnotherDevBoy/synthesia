@@ -6,11 +6,15 @@ public final class Configuration {
   }
 
   public static String getRedisUrl() {
-    return System.getenv("REDIS_URL");
+    String maybeRedisUrl = System.getenv("REDIS_URL");
+
+    return maybeRedisUrl == null ? "redis://localhost:6379" : maybeRedisUrl;
   }
 
   public static String getSqsUrl() {
-    return System.getenv("SQS_URL");
+    String maybeSqsUrl = System.getenv("SQS_URL");
+
+    return maybeSqsUrl == null ? "http://localhost:4566" : maybeSqsUrl;
   }
 
   public static int getAsyncQueueSize() {

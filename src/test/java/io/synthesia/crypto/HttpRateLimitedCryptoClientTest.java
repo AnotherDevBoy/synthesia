@@ -1,7 +1,7 @@
 package io.synthesia.crypto;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -9,6 +9,10 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import io.github.bucket4j.Bucket;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.prometheus.PrometheusConfig;
+import io.micrometer.prometheus.PrometheusMeterRegistry;
 import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.Optional;
@@ -37,9 +41,19 @@ public class HttpRateLimitedCryptoClientTest {
     this.wireMockServer.start();
     String baseUrlString = this.wireMockServer.baseUrl();
 
+    MeterRegistry registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+
     this.sut =
         new HttpRateLimitedCryptoClient(
-            httpClient, this.bucket, baseUrlString, "", Duration.ofSeconds(TIMEOUT_IN_SECONDS));
+            httpClient,
+            this.bucket,
+            baseUrlString,
+            "",
+            Duration.ofSeconds(TIMEOUT_IN_SECONDS),
+            Counter.builder("").register(registry),
+            Counter.builder("").register(registry),
+            Counter.builder("").register(registry),
+            Counter.builder("").register(registry));
   }
 
   @AfterEach
