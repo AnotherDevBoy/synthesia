@@ -6,10 +6,11 @@ import com.google.inject.Singleton;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.BucketConfiguration;
-import io.github.bucket4j.Refill;
 import io.github.bucket4j.distributed.ExpirationAfterWriteStrategy;
 import io.github.bucket4j.redis.lettuce.cas.LettuceBasedProxyManager;
 import io.lettuce.core.RedisClient;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.synthesia.Configuration;
 import io.synthesia.crypto.CryptoClient;
 import io.synthesia.crypto.HttpRateLimitedCryptoClient;
@@ -20,9 +21,8 @@ import java.time.Duration;
 public class CryptoModule extends AbstractModule {
   @Provides
   @Singleton
-  public CryptoClient cryptoClientProvider() {
-    Refill refill = Refill.intervally(10, Duration.ofMinutes(1));
-    Bandwidth limit = Bandwidth.classic(10, refill);
+  public CryptoClient cryptoClientProvider(MeterRegistry meterRegistry) {
+    Bandwidth limit = Bandwidth.simple(5, Duration.ofMinutes(1));
 
     BucketConfiguration configuration = BucketConfiguration.builder().addLimit(limit).build();
 
@@ -32,11 +32,17 @@ public class CryptoModule extends AbstractModule {
         LettuceBasedProxyManager.builderFor(redisClient)
             .withExpirationStrategy(
                 ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax(
-                    Duration.ofSeconds(10)))
+                    Duration.ofMinutes(1)))
             .build();
 
     Bucket bucket =
         proxyManager.builder().build("client".getBytes(StandardCharsets.UTF_8), configuration);
+
+
+    Counter success = Counter.builder("client_success").register(meterRegistry);
+    Counter clientErrorsCounter = Counter.builder("client_error").register(meterRegistry);
+    Counter apiRateLimitErrorCounter = Counter.builder("client_api_rate_limit_error").register(meterRegistry);
+    Counter rateLimitCounter = Counter.builder("client_rate_limit_count").register(meterRegistry);
 
     var client =
         HttpClient.newBuilder()
@@ -48,6 +54,10 @@ public class CryptoModule extends AbstractModule {
         bucket,
         Configuration.getApiBaseURL(),
         Configuration.getSynthesiaApiKey(),
-        Duration.ofSeconds(Configuration.getClientTimeoutInSeconds()));
+        Duration.ofSeconds(Configuration.getClientTimeoutInSeconds()),
+        success,
+        clientErrorsCounter,
+        apiRateLimitErrorCounter,
+        rateLimitCounter);
   }
 }
