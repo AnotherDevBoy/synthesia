@@ -33,12 +33,9 @@ public class HttpRateLimitedCryptoClient implements CryptoClient {
   public Optional<String> sign(String message) {
     try {
       if (!bucket.tryConsume(1)) {
-        log.warn("Rate limit hit");
         this.rateLimit.increment();
         return Optional.empty();
       }
-
-      log.info("Attempting to sign message");
 
       var encodedMessage = URLEncoder.encode(message, StandardCharsets.UTF_8);
 
