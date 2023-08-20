@@ -32,7 +32,7 @@ public class CryptoModule extends AbstractModule {
         LettuceBasedProxyManager.builderFor(redisClient)
             .withExpirationStrategy(
                 ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax(
-                    Duration.ofMinutes(1)))
+                    Duration.ofMinutes(2)))
             .build();
 
     Bucket bucket =
